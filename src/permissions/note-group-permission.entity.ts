@@ -10,10 +10,16 @@ import { Note } from '../notes/note.entity';
 
 @Entity()
 export class NoteGroupPermission {
-  @ManyToOne((_) => Group, { primary: true })
+  @ManyToOne((_) => Group, {
+    primary: true,
+    onDelete: 'CASCADE',
+  })
   group: Group;
 
-  @ManyToOne((_) => Note, (note) => note.groupPermissions, { primary: true })
+  @ManyToOne((_) => Note, (note) => note.groupPermissions, {
+    primary: true,
+    onDelete: 'CASCADE',
+  })
   note: Note;
 
   @Column()

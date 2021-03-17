@@ -39,9 +39,14 @@ export class Note {
   @OneToMany(
     (_) => NoteGroupPermission,
     (groupPermission) => groupPermission.note,
+    { cascade: true },
   )
   groupPermissions: NoteGroupPermission[];
-  @OneToMany((_) => NoteUserPermission, (userPermission) => userPermission.note)
+  @OneToMany(
+    (_) => NoteUserPermission,
+    (userPermission) => userPermission.note,
+    { cascade: true },
+  )
   userPermissions: NoteUserPermission[];
   @Column({
     nullable: false,
