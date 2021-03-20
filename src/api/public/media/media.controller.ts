@@ -124,7 +124,7 @@ export class MediaController {
   ): Promise<void> {
     const username = req.user.userName;
     try {
-      await this.mediaService.deleteFile(filename, username);
+      await this.mediaService.deleteFileByFilename(filename, username);
     } catch (e) {
       if (e instanceof PermissionError) {
         throw new UnauthorizedException(e.message);
