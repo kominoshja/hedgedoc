@@ -157,9 +157,8 @@ describe('MediaService', () => {
     });
   });
 
-  describe('deleteFile', () => {
+  describe('deleteFileByFilename', () => {
     it('works', async () => {
-      const testFileName = 'testFilename';
       const mockMediaUploadEntry = {
         id: 'testMediaUpload',
         backendData: 'testBackendData',
@@ -172,7 +171,7 @@ describe('MediaService', () => {
         .mockResolvedValueOnce(mockMediaUploadEntry);
       jest.spyOn(service.mediaBackend, 'deleteFile').mockImplementationOnce(
         async (fileName: string, backendData: BackendData): Promise<void> => {
-          expect(fileName).toEqual(testFileName);
+          expect(fileName).toEqual(mockMediaUploadEntry.id);
           expect(backendData).toEqual(mockMediaUploadEntry.backendData);
         },
       );
@@ -182,7 +181,7 @@ describe('MediaService', () => {
           expect(entry).toEqual(mockMediaUploadEntry);
           return entry;
         });
-      await service.deleteFile(testFileName, 'hardcoded');
+      await service.deleteFileByFilename(mockMediaUploadEntry.id, 'hardcoded');
     });
 
     it('fails: the mediaUpload is not owned by user', async () => {
@@ -198,10 +197,35 @@ describe('MediaService', () => {
         .spyOn(mediaRepo, 'findOne')
         .mockResolvedValueOnce(mockMediaUploadEntry);
       try {
-        await service.deleteFile(testFileName, 'hardcoded');
+        await service.deleteFileByFilename(testFileName, 'hardcoded');
       } catch (e) {
         expect(e).toBeInstanceOf(PermissionError);
       }
+    });
+  });
+
+  describe('deleteFile', () => {
+    it('works', async () => {
+      const mockMediaUploadEntry = {
+        id: 'testMediaUpload',
+        backendData: 'testBackendData',
+        user: {
+          userName: 'hardcoded',
+        } as User,
+      } as MediaUpload;
+      jest.spyOn(service.mediaBackend, 'deleteFile').mockImplementationOnce(
+        async (fileName: string, backendData: BackendData): Promise<void> => {
+          expect(fileName).toEqual(mockMediaUploadEntry.id);
+          expect(backendData).toEqual(mockMediaUploadEntry.backendData);
+        },
+      );
+      jest
+        .spyOn(mediaRepo, 'remove')
+        .mockImplementationOnce(async (entry, _) => {
+          expect(entry).toEqual(mockMediaUploadEntry);
+          return entry;
+        });
+      await service.deleteFile(mockMediaUploadEntry);
     });
   });
   describe('findUploadByFilename', () => {

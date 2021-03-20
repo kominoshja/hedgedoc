@@ -115,12 +115,14 @@ export class MediaService {
    * Try to delete the file specified by the filename with the user specified by the username.
    * @param {string} filename - the name of the file to delete.
    * @param {string} username - the username of the user who uploaded this file
-   * @return {string} the url of the saved file
    * @throws {PermissionError} the user is not permitted to delete this file.
    * @throws {NotInDBError} - the file entry specified is not in the database
    * @throws {MediaBackendError} - there was an error deleting the file
    */
-  async deleteFile(filename: string, username: string): Promise<void> {
+  async deleteFileByFilename(
+    filename: string,
+    username: string,
+  ): Promise<void> {
     this.logger.debug(
       `Deleting '${filename}' for user '${username}'`,
       'deleteFile',
@@ -135,7 +137,17 @@ export class MediaService {
         `File '${filename}' is not owned by '${username}'`,
       );
     }
-    await this.mediaBackend.deleteFile(filename, mediaUpload.backendData);
+    await this.deleteFile(mediaUpload);
+  }
+
+  /**
+   * @async
+   * Try to delete the specified file.
+   * @param {MediaUpload} mediaUpload - the name of the file to delete.
+   * @throws {MediaBackendError} - there was an error deleting the file
+   */
+  async deleteFile(mediaUpload: MediaUpload): Promise<void> {
+    await this.mediaBackend.deleteFile(mediaUpload.id, mediaUpload.backendData);
     await this.mediaUploadRepository.remove(mediaUpload);
   }
 
