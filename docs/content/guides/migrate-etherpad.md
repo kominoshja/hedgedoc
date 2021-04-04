@@ -68,7 +68,7 @@ if (( $# != 1 )); then
 fi
 
 # Do the migration
-for PAD_NAME in $1; do
+while read PAD_NAME; do
     # Download the pad
     PAD_FILE="$(mktemp)"
     curl "$ETHERPAD_SERVER/p/$PAD_NAME/export/txt" >"$PAD_FILE"
@@ -76,7 +76,8 @@ for PAD_NAME in $1; do
     # Import the pad into HedgeDoc
     OUTPUT="$(./hedgedoc import "$PAD_FILE")"
     echo "$PAD_NAME -> $OUTPUT" >>"$REDIRECTS_FILE"
-done
+done<$1
+
 ```
 
 Call this file like this:
